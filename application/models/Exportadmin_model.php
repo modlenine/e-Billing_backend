@@ -132,7 +132,7 @@ class Exportadmin_model extends CI_Model {
         $objPHPExcel->setActiveSheetIndex(0);
         //กำหนดส่วนหัวเป็น Column แบบ Fix ไม่มีการเปลี่ยนแปลงใดๆ
 
-        $objPHPExcel->getActiveSheet()->setCellValue('a1', 'Taxid.');
+        $objPHPExcel->getActiveSheet()->setCellValue('a1', 'Vender name');
         $objPHPExcel->getActiveSheet()->setCellValue('b1', 'Period upload');
         $objPHPExcel->getActiveSheet()->setCellValue('c1', 'Vender account');
         $objPHPExcel->getActiveSheet()->setCellValue('d1', 'Company');
