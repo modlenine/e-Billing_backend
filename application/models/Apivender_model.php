@@ -49,7 +49,7 @@ class Apivender_model extends CI_Model {
                 if($sqlLogin->num_rows() == 0){
                     $output = array(
                         "msg" => "ข้อมูล Username หรือ Password ไม่ถูกต้อง",
-                        "status" => "Login failed"
+                        "status" => "Login failed",
                     );
                 }else{
 
