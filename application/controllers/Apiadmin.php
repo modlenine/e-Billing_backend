@@ -287,6 +287,8 @@ class Apiadmin extends CI_Controller {
     public function sendNotifyBeforePay()
     {
         $this->api->sendNotifyBeforePay();
+        //http://localhost/intsys/ebilling/ebilling_backend/apiadmin/sendNotifyBeforePay
+        //Link check notify every day
     }
 
 
