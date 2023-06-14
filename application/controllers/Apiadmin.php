@@ -289,6 +289,7 @@ class Apiadmin extends CI_Controller {
         $this->api->sendNotifyBeforePay();
         //http://localhost/intsys/ebilling/ebilling_backend/apiadmin/sendNotifyBeforePay
         //Link check notify every day
+        //เช็คข้อมูลทุกวันเวลา 02.30 หากตรวจสอบพบว่าต้องส่ง Email ระบบจะส่ง Email ให้อัตโนมัติ
     }
 
 

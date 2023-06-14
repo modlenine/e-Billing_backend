@@ -581,29 +581,38 @@ public function sendEmailStep3_toAccountAndVender($formno)
 }
 
 
-function sendEmailtoVenderNotifyPay($taxid , $mainformno , $datepayreal , $email)
+function sendEmailtoVenderNotifyPay($taxid , $mainformnoPaying , $email)
 {
 
-   if($_SERVER['HTTP_HOST'] != "localhost"){
-      $notifyLink = "https://intranet.saleecolour.com/intsys/ebilling/ValidateBilled/$mainformno";
-   }else{
-      $notifyLink = "http://localhost:8080/ValidateBilled/$mainformno";
-   }
-
-   $subject = "แจ้งเตือนการจ่ายเงินจากบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)";
+   $taxname = contaxidToname($taxid);
+   $subject = "แจ้งเตือน จากระบบ e-Billing System ของบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)";
 
    $body = '
-      <h2>แจ้งเตือน จากระบบ e-Billing System ของบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)</h2>
-      <table>
-      <tr>
-         <td>
-         <span>เรียนผู้ค้า เลขที่ '.$taxid.' </span><br>
-         <span>เอกสารเลขที่ '.$mainformno.' จะถูกทำจ่ายให้แก่ท่านในวันที่ '.$datepayreal.' จึงเรียนเพื่อทราบ</span><br>
-         <span>ท่านสามารถตรวจสอบรายการได้ที่นี่ '.$notifyLink.'</span>
-         </td>
-      </tr>
-      </table><br>
-      <span style="color:#CC0000;">อีเมลนี้เป็นระบบแจ้งเตือนอัตโนมัติ</span>
+      <div>
+         <p>เรียน '.$taxname->row()->name.'</p>
+         <p style="margin-left:15px;">
+            <b>รายการที่จะครบกำหนดชำระให้ท่านในเดือนนี้</b>
+            <br>
+            ';
+            foreach($mainformnoPaying as $mainformnoPayings){
+
+               if($_SERVER['HTTP_HOST'] != "localhost"){
+                  $notifyLink = "https://intranet.saleecolour.com/intsys/ebilling/ValidateBilled/$mainformnoPayings";
+               }else{
+                  $notifyLink = "http://localhost:8080/ValidateBilled/$mainformnoPayings";
+               }
+
+               $body .='
+               <a href="'.$notifyLink.'"><span>'.$mainformnoPayings.'</span></a><br>
+               ';
+            }
+   $body .='
+         </p>
+         <p>
+            <span>กรณีที่ถูกหักภาษี ณ ที่จ่าย ท่านสามารถดาวน์โหลดได้หลังวันรับชำระเงินเป็นต้นไป</span>
+         </p>
+         <p style="color:red;">**อีเมลฉบับนี้เป็นระบบอัตโนมัติ โปรดอย่าตอบกลับ**</p>
+      </div>
       ';
 
    $to = "";
@@ -616,8 +625,8 @@ function sendEmailtoVenderNotifyPay($taxid , $mainformno , $datepayreal , $email
    //  Email Zone
    $arinsertEmail = array(
       "e_taxid" => $taxid,
-      "e_formno" => $mainformno,
       "e_mail" => $email,
+      "e_formno" => json_encode($mainformnoPaying),
       "e_status" => "Send Success",
       "e_datetime" => date("Y-m-d H:i:s")
    );

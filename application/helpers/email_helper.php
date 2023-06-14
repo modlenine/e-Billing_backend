@@ -85,7 +85,7 @@ function send_email($subject , $body ,$to = "" , $cc = "")
         <style>
             @import url("https://fonts.googleapis.com/css2?family=Sarabun&display=swap");
     
-            h3{
+            h3 , p , span , div{
                 font-family: Tahoma, sans-serif;
                 font-size:14px;
             }

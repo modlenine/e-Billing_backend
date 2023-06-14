@@ -2903,65 +2903,65 @@ class Apiadmin_model extends CI_Model
 
     public function sendNotifyBeforePay()
     {
-        $sql = $this->db->query("SELECT 
-        ma_formno,
-        ma_taxid,
-        ma_venderaccount,
-        ma_dataareaid,
-        ma_dateofpayreal,
-        DATE_SUB(ma_dateofpayreal, INTERVAL 10 DAY)AS beforeday,
-        vm_email,
-        ma_status,
-        ma_memo_vender
-        FROM bill_main
-        INNER JOIN vender_member ON ma_taxid = vm_taxid
-        WHERE ma_status = 'Posted'
-        ");
+        $queryVenderPaying = $this->queryGetVenderPaying();
 
-        $payreal = [];
-        $payreal2 = [];
-        $beforePayreal = [];
-        $dateSendNotify = "";
+        $mainformnoPaying = [];
+        $email = "";
+        $taxid = "";
+        foreach($queryVenderPaying->result() as $rs){
+            $queryVenderPayingDetail = $this->queryVenderPayingDetail($rs->ma_taxid);
 
-        $venderTaxid = [];
-        foreach($sql->result() as $rs){
+            $taxid = $rs->ma_taxid;
 
-            $dateSendNotify = strtotime($rs->beforeday);
-            $dateNow = strtotime(date("Y-m-d"));
-            if($dateSendNotify == $dateNow){
-                //Send Email
-                $taxid = $rs->ma_taxid;
-                $mainformno = $rs->ma_formno;
-                $datepayreal = conDateFromDb($rs->ma_dateofpayreal);
+            foreach($queryVenderPayingDetail->result() as $rs){
                 $email = $rs->vm_email;
-                $this->email_model->sendEmailtoVenderNotifyPay($taxid , $mainformno , $datepayreal , $email);
+                array_push($mainformnoPaying , $rs->ma_formno);
             }
 
+            
+            $this->email_model->sendEmailtoVenderNotifyPay($taxid , $mainformnoPaying , $email);
+
+            $email = "";
+            $taxid = "";
+            $mainformnoPaying = [];
         }
 
         $output = array(
             "msg" => "ส่ง Email สำเร็จ",
-            "status" => "Send Email Success"
+            "status" => "Send Email Success",
+            "datetime" => date("Y-m-d H:i:s")
         );
 
         echo json_encode($output);
     }
-    private function queryGetVenderPayreal($taxid)
+    private function queryGetVenderPaying()
+    {
+        $sql = $this->db->query("SELECT 
+        ma_taxid
+        FROM bill_main
+        WHERE ma_status = 'Posted' AND 
+        DATE_SUB(ma_dateofpayreal, INTERVAL 10 DAY) = CURDATE() 
+        GROUP BY ma_taxid");
+        return $sql;
+    }
+    private function queryVenderPayingDetail($taxid)
     {
         if($taxid != ""){
             $sql = $this->db->query("SELECT 
-            ma_formno,
-            ma_taxid,
-            ma_venderaccount,
-            ma_dataareaid,
-            ma_dateofpayreal,
-            DATE_SUB(ma_dateofpayreal, INTERVAL 10 DAY)AS beforeday,
-            vm_email,
-            ma_status,
-            ma_memo_vender
-            FROM bill_main
-            INNER JOIN vender_member ON ma_taxid = vm_taxid
-            WHERE ma_status = 'Posted' AND ma_taxid = '$taxid'
+                ma_formno,
+                ma_taxid,
+                ma_venderaccount,
+                ma_dataareaid,
+                ma_dateofpayreal,
+                DATE_SUB(ma_dateofpayreal, INTERVAL 10 DAY)AS beforeday,
+                vm_email,
+                ma_status,
+                ma_memo_vender
+                FROM bill_main
+                INNER JOIN vender_member ON ma_taxid = vm_taxid
+                WHERE ma_status = 'Posted' AND 
+                DATE_SUB(ma_dateofpayreal, INTERVAL 10 DAY) = CURDATE() AND
+                ma_taxid = '$taxid'
             ");
             return $sql;
         }
