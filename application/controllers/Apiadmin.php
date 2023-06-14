@@ -284,6 +284,11 @@ class Apiadmin extends CI_Controller {
         $this->api->deleteUser();
     }
 
+    public function sendNotifyBeforePay()
+    {
+        $this->api->sendNotifyBeforePay();
+    }
+
 
 
 

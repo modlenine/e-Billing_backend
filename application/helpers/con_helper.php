@@ -335,3 +335,12 @@ function contaxidToname($taxid)
     }
 
 }
+
+
+function addToUniqueeArray($array , $value)
+{
+    if(!in_array($value , $array)){
+        array_push($array , $value);
+    }
+    return $array;
+}

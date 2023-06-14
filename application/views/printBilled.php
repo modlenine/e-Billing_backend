@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ใบวางบิลเลขที่ <?=$formno?></title>
+    <title>ใบรับวางบิลเลขที่ <?=$formno?></title>
 </head>
 
 <body>
@@ -40,7 +40,7 @@ class MYPDF extends TCPDF {
         $this->SetX(10);
         $this->SetY(10);
         // Title
-        $this->Cell(0, 15, 'ใบวางบิล', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+        $this->Cell(0, 15, 'ใบรับวางบิล', 0, false, 'C', 0, '', 0, false, 'M', 'M');
         $this->Ln();
 
         $this->SetFont('thsarabun', 'B', 16);
@@ -72,31 +72,7 @@ class MYPDF extends TCPDF {
     // Page footer
     public function Footer() {
 
-        $this->SetFont('thsarabun', 'B', 14);
-        $this->SetY(-25);
-        // Title
-        $this->Cell(60, 15, 'ผู้วางบิล............................................', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-        $this->Ln();
-
-        $this->SetFont('thsarabun', 'B', 13);
-        $this->SetY(-18);
-        // Title
-        $this->Cell(60, 15, $this->getdateofbill, 0, false, 'C', 0, '', 0, false, 'M', 'M');
-        $this->Ln();
-
-        $this->SetFont('thsarabun', 'B', 14);
-        $this->SetY(-25);
-        // Title
-        $this->Cell(330, 15, 'ผู้รับวางบิล............................................', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-        $this->Ln();
-
-        $this->SetFont('thsarabun', 'B', 13);
-        $this->SetY(-18);
-        // Title
-        $this->Cell(330, 15, $this->getdatereceivebill, 0, false, 'C', 0, '', 0, false, 'M', 'M');
-        $this->Ln();
-
-        $this->SetFont('thsarabun', 'B', 14);
+        $this->SetFont('thsarabun', 'B', 16);
         $this->SetY(-40);
         // Title
         $this->Cell(180, 10, $this->getstatusbill, 0, false, 'C', 0, '', 0, false, 'T', 'M');

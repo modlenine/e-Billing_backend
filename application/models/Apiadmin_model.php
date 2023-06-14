@@ -2748,6 +2748,7 @@ class Apiadmin_model extends CI_Model
                     "u_finance_section" => $this->input->post("ip-addUser-fn"),
                     "u_admin_section" => $this->input->post("ip-addUser-admin"),
                     "u_upload_section" => $this->input->post("ip-addUser-upload"),
+                    "u_upload2_section" => $this->input->post("ip-addUser-uploadPosted"),
     
                     "u_usercreate" => $this->input->post("ip-addUser-login-username"),
                     "u_ecodecreate" => $this->input->post("ip-addUser-login-ecode"),
@@ -2775,6 +2776,7 @@ class Apiadmin_model extends CI_Model
                 "u_finance_section" => $this->input->post("ip-addUser-fn"),
                 "u_admin_section" => $this->input->post("ip-addUser-admin"),
                 "u_upload_section" => $this->input->post("ip-addUser-upload"),
+                "u_upload2_section" => $this->input->post("ip-addUser-uploadPosted"),
 
                 "u_usermodify" => $this->input->post("ip-addUser-login-username"),
                 "u_ecodemodify" => $this->input->post("ip-addUser-login-ecode"),
@@ -2814,6 +2816,7 @@ class Apiadmin_model extends CI_Model
             user_permission.u_finance_section,
             user_permission.u_admin_section,
             user_permission.u_upload_section,
+            user_permission.u_upload2_section,
             user_permission.u_usercreate,
             user_permission.u_ecodecreate,
             user_permission.u_datetimecreate
@@ -2855,7 +2858,8 @@ class Apiadmin_model extends CI_Model
             user_permission.u_ap_section,
             user_permission.u_finance_section,
             user_permission.u_admin_section,
-            user_permission.u_upload_section
+            user_permission.u_upload_section,
+            user_permission.u_upload2_section
             FROM
             user_permission
             WHERE u_autoid = '$autoid'");
@@ -2894,6 +2898,73 @@ class Apiadmin_model extends CI_Model
             );
         }
         echo json_encode($output);
+    }
+
+
+    public function sendNotifyBeforePay()
+    {
+        $sql = $this->db->query("SELECT 
+        ma_formno,
+        ma_taxid,
+        ma_venderaccount,
+        ma_dataareaid,
+        ma_dateofpayreal,
+        DATE_SUB(ma_dateofpayreal, INTERVAL 10 DAY)AS beforeday,
+        vm_email,
+        ma_status,
+        ma_memo_vender
+        FROM bill_main
+        INNER JOIN vender_member ON ma_taxid = vm_taxid
+        WHERE ma_status = 'Posted'
+        ");
+
+        $payreal = [];
+        $payreal2 = [];
+        $beforePayreal = [];
+        $dateSendNotify = "";
+
+        $venderTaxid = [];
+        foreach($sql->result() as $rs){
+
+            $dateSendNotify = strtotime($rs->beforeday);
+            $dateNow = strtotime(date("Y-m-d"));
+            if($dateSendNotify == $dateNow){
+                //Send Email
+                $taxid = $rs->ma_taxid;
+                $mainformno = $rs->ma_formno;
+                $datepayreal = conDateFromDb($rs->ma_dateofpayreal);
+                $email = $rs->vm_email;
+                $this->email_model->sendEmailtoVenderNotifyPay($taxid , $mainformno , $datepayreal , $email);
+            }
+
+        }
+
+        $output = array(
+            "msg" => "ส่ง Email สำเร็จ",
+            "status" => "Send Email Success"
+        );
+
+        echo json_encode($output);
+    }
+    private function queryGetVenderPayreal($taxid)
+    {
+        if($taxid != ""){
+            $sql = $this->db->query("SELECT 
+            ma_formno,
+            ma_taxid,
+            ma_venderaccount,
+            ma_dataareaid,
+            ma_dateofpayreal,
+            DATE_SUB(ma_dateofpayreal, INTERVAL 10 DAY)AS beforeday,
+            vm_email,
+            ma_status,
+            ma_memo_vender
+            FROM bill_main
+            INNER JOIN vender_member ON ma_taxid = vm_taxid
+            WHERE ma_status = 'Posted' AND ma_taxid = '$taxid'
+            ");
+            return $sql;
+        }
     }
 
 

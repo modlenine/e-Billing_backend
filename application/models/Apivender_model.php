@@ -176,7 +176,7 @@ class Apivender_model extends CI_Model {
                         "vm_status" => "wait activate",
                         "vm_datetime_wait_activate" => date("Y-m-d H:i:s"),
                         "vm_activatecode" => $link,
-                        "vm_expire_linkactivate" => strtotime('+24 hours')
+                        "vm_expire_linkactivate" => strtotime('+1 hours')
                     );
         
                     $this->db->insert("vender_member" , $arInsertVmMember);
@@ -246,7 +246,7 @@ class Apivender_model extends CI_Model {
                 if($sqlget->row()->vm_status == "wait activate"){
                     if($sqlget->row()->vm_expire_linkactivate < time()){
                         $activatecode = md5(uniqid(rand(), true));
-                        $linkExpire = strtotime('+24 hours');
+                        $linkExpire = strtotime('+1 hours');
                         $arupdate = array(
                             "vm_datetime_wait_activate" => date("Y-m-d H:i:s"),
                             "vm_activatecode" => $activatecode,
@@ -433,7 +433,7 @@ class Apivender_model extends CI_Model {
             $email = $received_data->email;
 
             $tokencode = md5(uniqid(rand(), true));
-            $tokentime = strtotime('+ 15 minutes');
+            $tokentime = strtotime('+1 hours');
 
             // Get data for send email
             $sqlgetdata = $this->db->query("SELECT
@@ -506,7 +506,7 @@ class Apivender_model extends CI_Model {
                     );
                 }else{
                     $tokencode = md5(uniqid(rand(), true));
-                    $tokentime = strtotime('+ 30 minutes');
+                    $tokentime = strtotime('+1 hours');
                     $email = $sqlget->row()->vm_email;
                     $this->load->model("email_model");
 
@@ -580,7 +580,7 @@ class Apivender_model extends CI_Model {
             $newEmail = $received_data->newemail;
             $taxid = $received_data->taxid;
             $activatecode = md5(uniqid(rand(), true));
-            $linkExpire = strtotime('+24 hours');
+            $linkExpire = strtotime('+1 hours');
 
             // Check Email Duplicate
             $checkEmail = $this->checkEmailDuplicate($newEmail);
@@ -1915,7 +1915,7 @@ class Apivender_model extends CI_Model {
                             "vm_email" => null,
                             "vm_status" => "wait activate",
                             "vm_activatecode" => $codeactivate,
-                            "vm_expire_linkactivate" => strtotime('+24 hours')
+                            "vm_expire_linkactivate" => strtotime('+1 hours')
                         );
             
                         $this->db->where("vm_taxid" , $taxid);

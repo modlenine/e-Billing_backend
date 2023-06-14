@@ -57,7 +57,7 @@ function sendEmailtoUserForactivate($email , $taxid , $link)
       <tr>
          <td>
          <span>เรียนผู้ค้า เลขที่ '.$taxid.' </span><br>
-         <span>กรุณาคลิกที่ลิงค์ด้านล่างนี้ ภายใน 24 ชม. เพื่อเป็นการยืนยันตัวตนการเข้าใช้งานโปรแกรม e-Billing System ของบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)</span><br>
+         <span>กรุณาคลิกที่ลิงค์ด้านล่างนี้ ภายใน 1 ชม. เพื่อเป็นการยืนยันตัวตนการเข้าใช้งานโปรแกรม e-Billing System ของบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)</span><br>
          <span>'.$activateurl.'</span>
          </td>
       </tr>
@@ -90,7 +90,7 @@ function sendEmailtoUserForForgotpassword($email , $taxid , $tokencode)
       <tr>
          <td>
          <span>เรียนผู้ค้า เลขที่ '.$taxid.' </span><br>
-         <span>กรุณาคลิกที่ลิงค์ด้านล่างนี้ ภายใน 30 นาที. เพื่อกำหนดรหัสผ่านใหม่สำหรับการเข้าใช้งานโปรแกรม e-Billing System ของบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)</span><br>
+         <span>กรุณาคลิกที่ลิงค์ด้านล่างนี้ ภายใน 1 ชั่วโมง. เพื่อกำหนดรหัสผ่านใหม่สำหรับการเข้าใช้งานโปรแกรม e-Billing System ของบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)</span><br>
          <span>'.$activateurl.'</span>
          </td>
       </tr>
@@ -579,6 +579,51 @@ public function sendEmailStep3_toAccountAndVender($formno)
 
    }
 }
+
+
+function sendEmailtoVenderNotifyPay($taxid , $mainformno , $datepayreal , $email)
+{
+
+   if($_SERVER['HTTP_HOST'] != "localhost"){
+      $notifyLink = "https://intranet.saleecolour.com/intsys/ebilling/ValidateBilled/$mainformno";
+   }else{
+      $notifyLink = "http://localhost:8080/ValidateBilled/$mainformno";
+   }
+
+   $subject = "แจ้งเตือนการจ่ายเงินจากบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)";
+
+   $body = '
+      <h2>แจ้งเตือน จากระบบ e-Billing System ของบริษัท สาลี่ คัลเล่อร์ จำกัด (มหาชน)</h2>
+      <table>
+      <tr>
+         <td>
+         <span>เรียนผู้ค้า เลขที่ '.$taxid.' </span><br>
+         <span>เอกสารเลขที่ '.$mainformno.' จะถูกทำจ่ายให้แก่ท่านในวันที่ '.$datepayreal.' จึงเรียนเพื่อทราบ</span><br>
+         <span>ท่านสามารถตรวจสอบรายการได้ที่นี่ '.$notifyLink.'</span>
+         </td>
+      </tr>
+      </table><br>
+      <span style="color:#CC0000;">อีเมลนี้เป็นระบบแจ้งเตือนอัตโนมัติ</span>
+      ';
+
+   $to = "";
+   $cc = "";
+
+   //  Email Zone
+   $to = array($email);
+
+   send_email($subject, $body, $to, $cc);
+   //  Email Zone
+   $arinsertEmail = array(
+      "e_taxid" => $taxid,
+      "e_formno" => $mainformno,
+      "e_mail" => $email,
+      "e_status" => "Send Success",
+      "e_datetime" => date("Y-m-d H:i:s")
+   );
+   $this->db->insert("email_notify_log" , $arinsertEmail);
+}
+
 
 
 
