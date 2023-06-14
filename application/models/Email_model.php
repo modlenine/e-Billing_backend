@@ -612,6 +612,9 @@ function sendEmailtoVenderNotifyPay($taxid , $mainformnoPaying , $email)
             <span>กรณีที่ถูกหักภาษี ณ ที่จ่าย ท่านสามารถดาวน์โหลดได้หลังวันรับชำระเงินเป็นต้นไป</span>
          </p>
          <p style="color:red;">**อีเมลฉบับนี้เป็นระบบอัตโนมัติ โปรดอย่าตอบกลับ**</p>
+         <p>*หากมีข้อสงสัยหรือพบปัญหาโปรดติดต่อหน่วยงานการเงิน โทร.023232601-8 ต่อ 3041 <br>
+         อีเมล : finance_sup@saleecolour.com
+         </p>
       </div>
       ';
 
