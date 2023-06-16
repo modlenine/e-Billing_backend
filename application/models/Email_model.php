@@ -222,7 +222,10 @@ public function sendEmailStep1_toAPAndVender($formno)
       $optionToVender = getEmailVender($taxid);
       $toVender = array();
       foreach ($optionToVender->result_array() as $result) {
-         $toVender[] = $result['vm_email'];
+         // $toVender[] = $result['vm_email'];
+         array_push($toVender , $result['vm_email']);
+         array_push($toVender , $result['vm_email1']);
+         array_push($toVender , $result['vm_email2']);
       }
 
 
@@ -373,7 +376,10 @@ public function sendEmailStep2_toFinanceAndVender($formno)
       $optionToVender = getEmailVender($taxid);
       $toVender = array();
       foreach ($optionToVender->result_array() as $result) {
-         $toVender[] = $result['vm_email'];
+         // $toVender[] = $result['vm_email'];
+         array_push($toVender , $result['vm_email']);
+         array_push($toVender , $result['vm_email1']);
+         array_push($toVender , $result['vm_email2']);
       }
 
 
@@ -565,7 +571,10 @@ public function sendEmailStep3_toAccountAndVender($formno)
       $optionToVender = getEmailVender($taxid);
       $toVender = array();
       foreach ($optionToVender->result_array() as $result) {
-         $toVender[] = $result['vm_email'];
+         // $toVender[] = $result['vm_email'];
+         array_push($toVender , $result['vm_email']);
+         array_push($toVender , $result['vm_email1']);
+         array_push($toVender , $result['vm_email2']);
       }
 
 
@@ -618,13 +627,20 @@ function sendEmailtoVenderNotifyPay($taxid , $mainformnoPaying , $email)
       </div>
       ';
 
-   $to = "";
+   $toVender = "";
    $cc = "";
 
    //  Email Zone
-   $to = array($email);
+   $optionToVender = getEmailVender($taxid);
+   $toVender = array();
+   foreach ($optionToVender->result_array() as $result) {
+      // $toVender[] = $result['vm_email'];
+      array_push($toVender , $result['vm_email']);
+      array_push($toVender , $result['vm_email1']);
+      array_push($toVender , $result['vm_email2']);
+   }
 
-   send_email($subject, $body, $to, $cc);
+   send_email($subject, $body, $toVender, $cc);
    //  Email Zone
    $arinsertEmail = array(
       "e_taxid" => $taxid,

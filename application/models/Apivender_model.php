@@ -1869,6 +1869,8 @@ class Apivender_model extends CI_Model {
             $taxid = $received_data->taxid;
             $sql = $this->db->query("SELECT
             vm_email,
+            vm_email1,
+            vm_email2,
             vm_picture_profile,
             vm_picture_path
             FROM vender_member WHERE vm_taxid = '$taxid'
@@ -1897,53 +1899,53 @@ class Apivender_model extends CI_Model {
             $email = $this->input->post("userpro-email");
             $taxid = $this->input->post("userpro-taxid");
 
-            // Check Email
-            $sqlcheckEmail = $this->db->query("SELECT
-            vm_email
-            FROM vender_member WHERE vm_taxid = '$taxid'
-            ");
+            $email1 = $this->input->post("userpro-email1");
+            $email2 = $this->input->post("userpro-email2");
 
-            // Check Email Duplicate
-            $checkEmail = $this->checkEmailDuplicate($email);
-            if($checkEmail->num_rows() == 0){
-                if($sqlcheckEmail->num_rows() != 0){
-                    if($email != $sqlcheckEmail->row()->vm_email){
-                        $this->load->model("email_model");
-                        $codeactivate = md5(uniqid(rand(), true));
-                        $arupdate = array(
-                            "vm_email_temp" => $email,
-                            "vm_email" => null,
-                            "vm_status" => "wait activate",
-                            "vm_activatecode" => $codeactivate,
-                            "vm_expire_linkactivate" => strtotime('+1 hours')
-                        );
-            
-                        $this->db->where("vm_taxid" , $taxid);
-                        $this->db->update("vender_member" , $arupdate);
+            if($email1 == ""){
+                $email1 = null;
+            }
+            if($email2 == ""){
+                $email2 = null;
+            }
+
+            // Check Email
+            $sqlcheckEmail = $this->checkEmailDuplicate_edit($email , 'vm_email');
+
+            if($sqlcheckEmail->num_rows() != 0){
+                if($email != $sqlcheckEmail->row()->vm_email){
+                    $this->load->model("email_model");
+                    $codeactivate = md5(uniqid(rand(), true));
+                    $arupdate = array(
+                        "vm_email_temp" => $email,
+                        "vm_email" => null,
+                        "vm_email1" => $email1,
+                        "vm_email2" => $email2,
+                        "vm_status" => "wait activate",
+                        "vm_activatecode" => $codeactivate,
+                        "vm_expire_linkactivate" => strtotime('+1 hours')
+                    );
+                    $this->db->where("vm_taxid" , $taxid);
+                    $this->db->update("vender_member" , $arupdate);
+
+                    $this->email_model->sendEmailtoUserForactivate($email , $taxid , $codeactivate);
     
-                        $this->email_model->sendEmailtoUserForactivate($email , $taxid , $codeactivate);
-    
-                        $fileInput = "userpro-image";
-                        uploadUserProfile($fileInput , $taxid);
-            
-                        $output = array(
-                            "msg" => "อัพเดตข้อมูล User Profile สำเร็จ",
-                            "status" => "Update Data Success And Activate Data Again",
-                            "taxid" => $taxid
-                        );
-    
-                    }else{
-                        $fileInput = "userpro-image";
-                        uploadUserProfile($fileInput , $taxid);
-            
-                        $output = array(
-                            "msg" => "อัพเดตข้อมูล User Profile สำเร็จ",
-                            "status" => "Update Data Success",
-                        );
-                    }
-                }
-            }else if($checkEmail->num_rows() != 0){
-                if($sqlcheckEmail->row()->vm_email == $email){
+                    $fileInput = "userpro-image";
+                    uploadUserProfile($fileInput , $taxid);
+        
+                    $output = array(
+                        "msg" => "อัพเดตข้อมูล User Profile สำเร็จ",
+                        "status" => "Update Data Success And Activate Data Again",
+                        "taxid" => $taxid
+                    );
+                }else if($email == $sqlcheckEmail->row()->vm_email){
+                    $arupdate = array(
+                        "vm_email1" => $email1,
+                        "vm_email2" => $email2,
+                    );
+                    $this->db->where("vm_taxid" , $taxid);
+                    $this->db->update("vender_member" , $arupdate);
+
                     $fileInput = "userpro-image";
                     uploadUserProfile($fileInput , $taxid);
         
@@ -1951,18 +1953,9 @@ class Apivender_model extends CI_Model {
                         "msg" => "อัพเดตข้อมูล User Profile สำเร็จ",
                         "status" => "Update Data Success",
                     );
-                }else{
-                    $output = array(
-                        "msg" => "พบอีเมลซ้ำในระบบ",
-                        "status" => "Found Duplicate Email"
-                    );
                 }
-            }else{
-                $output = array(
-                    "msg" => "พบอีเมลซ้ำในระบบ",
-                    "status" => "Found Duplicate Email"
-                );
             }
+            
 
         }else{
             $output = array(
@@ -1971,6 +1964,15 @@ class Apivender_model extends CI_Model {
             );
         }
         echo json_encode($output);
+    }
+    private function checkEmailDuplicate_edit($email , $column)
+    {
+        if($email != "" && $column != ""){
+            $sql = $this->db->query("SELECT
+            $column FROM vender_member WHERE $column = '$email'
+            ");
+            return $sql;
+        }
     }
 
 

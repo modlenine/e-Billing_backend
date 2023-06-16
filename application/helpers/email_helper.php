@@ -358,7 +358,9 @@ function getEmailVender($taxid)
 {
     if($taxid != ""){
         $sql = emailobj()->db->query("SELECT
-        vm_email
+        vm_email,
+        vm_email1,
+        vm_email2
         FROM vender_member WHERE vm_taxid = '$taxid'
         ");
 
