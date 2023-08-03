@@ -102,6 +102,7 @@ class MYPDF extends TCPDF {
         $htmlTextPrint ='รายการอยู่ระหว่างตรวจสอบเอกสาร';
     }else if($dataBillMain->row()->ma_status == "In Progress"){
         $htmlTextPrint ='อนุมัติรายการแล้ว';
+        $htmlTextPrint2 = 'วันที่รับเงิน : '.conDateFromDb($dataBillDetail->row()->tr_dateofpayreal);
     }else if($dataBillMain->row()->ma_status == "Posted"){
         $htmlTextPrint ='รับเงินโอนเข้าบัญชี / รับเช็ค';
         $htmlTextPrint2 = 'วันที่รับเงิน : '.conDateFromDb($dataBillDetail->row()->tr_dateofpayreal);
