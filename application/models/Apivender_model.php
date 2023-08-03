@@ -798,12 +798,46 @@ class Apivender_model extends CI_Model {
             $days = round(($endTimestamp - $startTimestamp) / (60 * 60 * 24));
 
 
-            // find date pay real
-            $monthPay = date("m" , $datepay);
-            $yearPay = date("Y" , $datepay);
-            $queryDatePayReal = $this->getDatePayReal($monthPay , $yearPay);
+            $monthPay0 = date("m" , $datepay);
+            $yearPay0 = date("Y" , $datepay);
+            $queryDatePayReal = $this->getDatePayReal($monthPay0 , $yearPay0);
             if($queryDatePayReal->num_rows() != 0){
                 $datePayreal = $queryDatePayReal->row()->sc_datePay;
+            }
+
+            $datePayreal = strtotime($datePayreal);
+
+
+            $conDatePay = date("Y-m-d" , $datepay);
+            $nextMonth = "";
+            if($datepay > $datePayreal){
+                $datepayNextmonth = DateTime::createFromFormat('Y-m-d', $conDatePay);
+                $datepayNextmonth->modify('first day of next month');
+                $nextMonth = $datepayNextmonth->format('Y-m-d');
+            }else if($datepay < $datePayreal){
+                $nextMonth = "";
+            }
+
+
+            $nextMonthTimeStamp = "";
+            if($nextMonth != ""){
+                $nextMonthTimeStamp = strtotime($nextMonth);
+                // find date pay real
+                $monthPay = date("m" , $nextMonthTimeStamp);
+                $yearPay = date("Y" , $nextMonthTimeStamp);
+            }else{
+                // find date pay real
+                $monthPay = date("m" , $datepay);
+                $yearPay = date("Y" , $datepay);
+            }
+
+            // $monthPay = date("m" , $datepay);
+            // $yearPay = date("Y" , $datepay);
+
+
+            $queryDatePayRealNextMonth = $this->getDatePayReal($monthPay , $yearPay);
+            if($queryDatePayRealNextMonth->num_rows() != 0){
+                $datePayreal2 = $queryDatePayRealNextMonth->row()->sc_datePay;
             }
 
 
@@ -815,9 +849,14 @@ class Apivender_model extends CI_Model {
                 "dayFix" => $dayfix,
                 "numofday" => $numofday,
                 "datepay" => date("d/m/Y" , $datepay),
-                "datepayReal" => conDateFromDb($datePayreal),
+                "datepayReal" => conDateFromDb($datePayreal2),
                 "datecalc" => date("d/m/Y" , $dateCalcToTime),
-                "Number of days: " => $days
+                "Number of days: " => $days,
+                "Next month" => $nextMonth,
+                "test1" => $datepay ,
+                "test2" => $datePayreal,
+                "month" => $monthPay,
+                "year" => $yearPay
             );
 
             // $output = array(
