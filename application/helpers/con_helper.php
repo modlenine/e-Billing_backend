@@ -344,3 +344,11 @@ function addToUniqueeArray($array , $value)
     }
     return $array;
 }
+
+function removeBOM($string) {
+    // Define the BOM pattern as a regular expression
+    $bomPattern = '/^' . pack('H*', 'EFBBBF') . '/i';
+    // Remove the BOM characters from the string
+    $cleanString = preg_replace($bomPattern, '', $string);
+    return $cleanString;
+}

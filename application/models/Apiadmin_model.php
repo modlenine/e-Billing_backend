@@ -355,7 +355,7 @@ class Apiadmin_model extends CI_Model
                             $period2 = strtotime($dataYearBill."-".$dataMonthBill);
     
                             $arupdate = array(
-                                "invoiceaccount" => $data[0],
+                                "invoiceaccount" => removeBOM($data[0]),
                                 "ledgervoucher" => $data[1],
                                 "purchid" => $data[2],
                                 "invoiceid" => $data[3],
