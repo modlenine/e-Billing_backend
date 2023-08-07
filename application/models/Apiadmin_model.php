@@ -388,7 +388,7 @@ class Apiadmin_model extends CI_Model
     
     
                             if($dataMonthInvoice == $dataMonth && $dataYear == $dataYearInvoice){
-                                if($this->checkDuplicateData($venderAccount , $voucher , $po , $invoice , $dataareaid , $invoicedate)->num_rows() == 0){
+                                if($this->checkDuplicateData($venderAccount , $voucher , $invoice , $dataareaid , $invoicedate)->num_rows() == 0){
                                     $this->db->insert("billupload", $arupdate);
                                 }
                             }
@@ -450,7 +450,7 @@ class Apiadmin_model extends CI_Model
     }
 
 
-    private function checkDuplicateData($venderAccount , $voucher , $po , $invoice , $dataareaid , $invoicedate)
+    private function checkDuplicateData($venderAccount , $voucher  , $invoice , $dataareaid , $invoicedate)
     {
         if($venderAccount != "" && $voucher != "" && $dataareaid != ""){
             $sql = $this->db->query("SELECT
@@ -459,7 +459,7 @@ class Apiadmin_model extends CI_Model
             purchid,
             invoiceid,
             dataareaid
-            FROM billupload WHERE invoiceaccount = '$venderAccount' and ledgervoucher = '$voucher' and purchid = '$po' and invoiceid = '$invoice' and dataareaid = '$dataareaid' and invoicedate = '$invoicedate'
+            FROM billupload WHERE invoiceaccount = '$venderAccount' and ledgervoucher = '$voucher' and invoiceid = '$invoice' and dataareaid = '$dataareaid' and invoicedate = '$invoicedate'
             ");
 
             return $sql;
