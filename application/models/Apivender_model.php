@@ -930,6 +930,7 @@ class Apivender_model extends CI_Model {
             autoid,
             invoiceaccount,
             ledgervoucher,
+            SUBSTR(ledgervoucher,1 , 2)as voucher,
             purchid,
             invoiceid,
             salesbalance,
