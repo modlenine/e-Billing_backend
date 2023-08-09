@@ -1511,19 +1511,39 @@ class Apiadmin_model extends CI_Model
         if($venderaccount != "" && $dataareaid != ""){
 
             $sql = $this->db_mssql->query("SELECT
-            a.bpc_whtid,
-            a.accountnum,
-            a.name,
-            a.slc_fname,
-            a.slc_lname,
-            a.address,
-            a.phone,
-            a.paymtermid,
-            a.dataareaid
-            FROM vendtable a
-            WHERE a.accountnum = '$venderaccount' and a.dataareaid = '$dataareaid'
+            bpc_whtid,
+            accountnum,
+            name,
+            slc_fname,
+            slc_lname,
+            address,
+            phone,
+            paymtermid,
+            dataareaid
+            FROM vendtable
+            WHERE accountnum = '$venderaccount' and dataareaid = '$dataareaid'
             ");
-            return $sql;
+
+            $sql2 = $this->db_mssql2->query("SELECT
+            bpc_whtid,
+            accountnum,
+            name,
+            slc_fname,
+            slc_lname,
+            address,
+            phone,
+            paymtermid,
+            dataareaid
+            FROM vendtable
+            WHERE accountnum = '$venderaccount' and dataareaid = '$dataareaid'
+            ");
+
+            if($sql->num_rows() == 0){
+                return $sql2;
+            }else{
+                return $sql;
+            }
+
         }
 
     }

@@ -132,7 +132,32 @@ class Apivender extends CI_Controller {
 
     public function testcode()
     {
-        $this->load->view("testemail");
+        $optionToVender = getEmailVender('0105560010706');
+        $toVender = array();
+        foreach ($optionToVender->result_array() as $result) {
+           // $toVender[] = $result['vm_email'];
+           if($result['vm_email'] != ""){
+            array_push($toVender , $result['vm_email']);
+           }
+
+           if($result['vm_email1'] != ""){
+            array_push($toVender , $result['vm_email1']);
+           }
+
+           if($result['vm_email2'] != ""){
+            array_push($toVender , $result['vm_email2']);
+           }
+
+        }
+
+        print_r($toVender);
+
+        $optionccVender = getEmailAccountSection();
+        $ccVender = array();
+        foreach ($optionccVender->result_array() as $resultcc) {
+           $ccVender[] = $resultcc['u_email'];
+        }
+        print_r($ccVender);
     }
 
 

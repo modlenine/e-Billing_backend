@@ -223,9 +223,18 @@ public function sendEmailStep1_toAPAndVender($formno)
       $toVender = array();
       foreach ($optionToVender->result_array() as $result) {
          // $toVender[] = $result['vm_email'];
-         array_push($toVender , $result['vm_email']);
-         array_push($toVender , $result['vm_email1']);
-         array_push($toVender , $result['vm_email2']);
+         if($result['vm_email'] != ""){
+          array_push($toVender , $result['vm_email']);
+         }
+
+         if($result['vm_email1'] != ""){
+          array_push($toVender , $result['vm_email1']);
+         }
+
+         if($result['vm_email2'] != ""){
+          array_push($toVender , $result['vm_email2']);
+         }
+
       }
 
 
@@ -377,9 +386,18 @@ public function sendEmailStep2_toFinanceAndVender($formno)
       $toVender = array();
       foreach ($optionToVender->result_array() as $result) {
          // $toVender[] = $result['vm_email'];
-         array_push($toVender , $result['vm_email']);
-         array_push($toVender , $result['vm_email1']);
-         array_push($toVender , $result['vm_email2']);
+         if($result['vm_email'] != ""){
+          array_push($toVender , $result['vm_email']);
+         }
+
+         if($result['vm_email1'] != ""){
+          array_push($toVender , $result['vm_email1']);
+         }
+
+         if($result['vm_email2'] != ""){
+          array_push($toVender , $result['vm_email2']);
+         }
+
       }
 
 
@@ -572,9 +590,18 @@ public function sendEmailStep3_toAccountAndVender($formno)
       $toVender = array();
       foreach ($optionToVender->result_array() as $result) {
          // $toVender[] = $result['vm_email'];
-         array_push($toVender , $result['vm_email']);
-         array_push($toVender , $result['vm_email1']);
-         array_push($toVender , $result['vm_email2']);
+         if($result['vm_email'] != ""){
+          array_push($toVender , $result['vm_email']);
+         }
+
+         if($result['vm_email1'] != ""){
+          array_push($toVender , $result['vm_email1']);
+         }
+
+         if($result['vm_email2'] != ""){
+          array_push($toVender , $result['vm_email2']);
+         }
+
       }
 
 
@@ -635,9 +662,18 @@ function sendEmailtoVenderNotifyPay($taxid , $mainformnoPaying , $email)
    $toVender = array();
    foreach ($optionToVender->result_array() as $result) {
       // $toVender[] = $result['vm_email'];
-      array_push($toVender , $result['vm_email']);
-      array_push($toVender , $result['vm_email1']);
-      array_push($toVender , $result['vm_email2']);
+      if($result['vm_email'] != ""){
+       array_push($toVender , $result['vm_email']);
+      }
+
+      if($result['vm_email1'] != ""){
+       array_push($toVender , $result['vm_email1']);
+      }
+
+      if($result['vm_email2'] != ""){
+       array_push($toVender , $result['vm_email2']);
+      }
+
    }
 
    send_email($subject, $body, $toVender, $cc);

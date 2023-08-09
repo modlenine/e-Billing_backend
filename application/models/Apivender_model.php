@@ -660,7 +660,7 @@ class Apivender_model extends CI_Model {
             billupload.dataareaid
             FROM
             billupload
-            where dataareaid in ('sln' , 'ca') and taxid = '$taxid'
+            where dataareaid in ('sln' , 'ca' , 'tbb' , 'st') and taxid = '$taxid'
             GROUP BY dataareaid , taxid
             ");
             return $sql;
@@ -677,7 +677,7 @@ class Apivender_model extends CI_Model {
             billupload.dataareaid
             FROM
             billupload
-            where dataareaid in ('sln' , 'ca') and taxid = '$taxid'
+            where dataareaid in ('sln' , 'ca' , 'tbb' , 'st') and taxid = '$taxid'
             GROUP BY dataareaid , taxid , payment
             ");
             return $sql;
@@ -763,6 +763,20 @@ class Apivender_model extends CI_Model {
             FROM paymterm WHERE paymtermid = '$payment' and dataareaid = '$dataareaid'
             ");
 
+            $sqldataNum2 = $this->db_mssql2->query("SELECT
+            numofdays
+            FROM paymterm WHERE paymtermid = '$payment' and dataareaid = '$dataareaid'
+            ");
+
+
+            // Check Company By database
+            $sqldataNumRs = "";
+            if($sqldataNum->num_rows() == 0){
+                $sqldataNumRs = $sqldataNum2;
+            }else{
+                $sqldataNumRs = $sqldataNum;
+            }
+
             // check data on schedule
             $resultSchedule = $this->getDataSchedule();
             $datePayreal = "";
@@ -780,10 +794,10 @@ class Apivender_model extends CI_Model {
             $numofday = 0;
             $dateCalcToTime = strtotime(date($dateCalc));
 
-            if($sql->num_rows() != 0 && $sqldataNum->num_rows() != 0){
-                $daynum = $dayfix + $sqldataNum->row()->numofdays;
+            if($querySql->num_rows() != 0 && $sqldataNumRs->num_rows() != 0){
+                $daynum = $dayfix + $sqldataNumRs->row()->numofdays;
                 $datepay = strtotime(date($dateCalc)."+$daynum days");
-                $numofday = $sqldataNum->row()->numofdays;
+                $numofday = $sqldataNumRs->row()->numofdays;
             }
 
             
@@ -860,9 +874,21 @@ class Apivender_model extends CI_Model {
             );
 
             // $output = array(
-            //     "test" => $sql->row_array(),
+            //     "test" => $querySql->row(),
             //     "test2" => $venderaccount ,
-            //     "test3" => $dataareaid
+            //     "test3" => $dataareaid,
+            //     "test4" => $sqldataNumRs->row(),
+            //     "datecalc" => $dateCalc,
+            //     "dateFix" => $dayfix,
+            //     "daynum" => $daynum,
+            //     "datePay" => $datepay,
+            //     "condatePay" => $conDatePay,
+            //     "numofday" => $numofday,
+            //     "days" => $days,
+            //     "datePayreal" => $datePayreal,
+            //     "conDatePayreal" => date("Y-m-d" , $datePayreal),
+            //     "nextMonth" => $nextMonth,
+            //     "datePayreal2" => $datePayreal2
             // );
         }else{
             $output = array(
@@ -1090,19 +1116,40 @@ class Apivender_model extends CI_Model {
         if($venderaccount != "" && $dataareaid != ""){
 
             $sql = $this->db_mssql->query("SELECT
-            a.bpc_whtid,
-            a.accountnum,
-            a.name,
-            a.slc_fname,
-            a.slc_lname,
-            a.address,
-            a.phone,
-            a.paymtermid,
-            a.dataareaid
-            FROM vendtable a
-            WHERE a.accountnum = '$venderaccount' and a.dataareaid = '$dataareaid'
+            bpc_whtid,
+            accountnum,
+            name,
+            slc_fname,
+            slc_lname,
+            address,
+            phone,
+            paymtermid,
+            dataareaid
+            FROM vendtable
+            WHERE accountnum = '$venderaccount' and dataareaid = '$dataareaid'
             ");
-            return $sql;
+
+            $sql2 = $this->db_mssql2->query("SELECT
+            bpc_whtid,
+            accountnum,
+            name,
+            slc_fname,
+            slc_lname,
+            address,
+            phone,
+            paymtermid,
+            dataareaid
+            FROM vendtable
+            WHERE accountnum = '$venderaccount' and dataareaid = '$dataareaid'
+            ");
+
+
+            if($sql->num_rows() == 0){
+                return $sql2;
+            }else{
+                return $sql;
+            }
+
         }
 
     }

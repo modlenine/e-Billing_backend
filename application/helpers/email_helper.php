@@ -118,10 +118,10 @@ function send_email($subject , $body ,$to = "" , $cc = "")
             }
         </style>
         '.$body;
-        // $mail->send();
-        if($_SERVER['HTTP_HOST'] != "localhost"){
-            $mail->send();
-        }
+        $mail->send();
+        // if($_SERVER['HTTP_HOST'] != "localhost"){
+        //     $mail->send();
+        // }
 
 
 }
@@ -239,7 +239,7 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
 
     if($ccVender != ""){
         foreach($ccVender as $email){
-            $mail2->AddCC($email);
+            $mail2->AddBCC($email);
         }
     }
 
@@ -287,10 +287,10 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
         }
     </style>
     '.$bodyVender;
-    // $mail2->send();
-    if($_SERVER['HTTP_HOST'] != "localhost"){
-        $mail->send();
-    }
+    $mail2->send();
+    // if($_SERVER['HTTP_HOST'] != "localhost"){
+    //     $mail->send();
+    // }
 }
 
 // Query Get Manager Email
