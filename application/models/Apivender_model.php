@@ -21,21 +21,32 @@ class Apivender_model extends CI_Model {
             // Check ข้อมูลว่ามีการ Activate ไปแล้วหรือยัง
             $sqlCheckData = $this->db->query("SELECT vm_username FROM vender_member WHERE vm_username = '$venderUsername'");
             if($sqlCheckData->num_rows() == 0){
-                // Check Default Password
-                $defaultPassword = substr($venderUsername , -4 , 4);
-                if($venderPassword == $defaultPassword){
-                    $output = array(
-                        "msg" => "ส่งไปหน้า Activate ข้อมูล",
-                        "status" => "Redirect To Activate Page",
-                        "taxid" => $venderUsername,
-                        "defaultPassword" => md5($defaultPassword),
-                    );
+
+                //Check Data on AX
+                $queryVenttable = $this->checkTaxidOnax($venderUsername);
+                if($queryVenttable->num_rows() != 0){
+                    // Check Default Password
+                    $defaultPassword = substr($venderUsername , -4 , 4);
+                    if($venderPassword == $defaultPassword){
+                        $output = array(
+                            "msg" => "ส่งไปหน้า Activate ข้อมูล",
+                            "status" => "Redirect To Activate Page",
+                            "taxid" => $venderUsername,
+                            "defaultPassword" => md5($defaultPassword),
+                        );
+                    }else{
+                        $output = array(
+                            "msg" => "Default Password ไม่ถูกต้อง",
+                            "status" => "Default Password Incorrect",
+                            "taxid" => $venderUsername,
+                            "defaultPassword" => $defaultPassword
+                        );
+                    }
                 }else{
                     $output = array(
-                        "msg" => "Default Password ไม่ถูกต้อง",
-                        "status" => "Default Password Incorrect",
+                        "msg" => "ไม่พบข้อมูลเลขที่ผู้เสียภาษีในระบบ กรุณาตรวจสอบความถูกต้องของเลขที่ผู้เสียภาษี",
+                        "status" => "Not Found Taxid",
                         "taxid" => $venderUsername,
-                        "defaultPassword" => $defaultPassword
                     );
                 }
 
@@ -109,6 +120,36 @@ class Apivender_model extends CI_Model {
         }
 
         echo json_encode($output);
+    }
+
+    private function checkTaxidOnax($taxid)
+    {
+        if($taxid != ""){
+            $sql = $this->db_mssql->query("SELECT 
+            bpc_whtid,
+            accountnum ,
+            dataareaid
+            from vendtable
+            where bpc_whtid = '$taxid' and substring(accountnum , 1 , 2) not in ('EX')
+            order by bpc_tax_vatid desc
+            ");
+
+
+            $sql2 = $this->db_mssql2->query("SELECT 
+            bpc_whtid,
+            accountnum ,
+            dataareaid
+            from vendtable
+            where bpc_whtid = '$taxid' and substring(accountnum , 1 , 2) not in ('EX')
+            order by bpc_tax_vatid desc
+            ");
+
+            if($sql->num_rows() == 0){
+                return $sql2;
+            }else{
+                return $sql;
+            }
+        }
     }
 
     private function escape_string()
