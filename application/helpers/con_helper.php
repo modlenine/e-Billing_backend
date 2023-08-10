@@ -214,6 +214,7 @@ function conCreditTerm($creditTermText , $dataareaid)
 {
     if($creditTermText != ""){
         cfn()->db_mssql = cfn()->load->database('mssql' , TRUE);
+        cfn()->db_mssql2 = cfn()->load->database('mssql2' , TRUE);
         $sql = cfn()->db_mssql->query("SELECT
         paymtermid,
         numofdays,
@@ -221,7 +222,21 @@ function conCreditTerm($creditTermText , $dataareaid)
         dataareaid
         FROM paymterm WHERE paymtermid = '$creditTermText' and dataareaid = '$dataareaid'
         ");
-        return $sql;
+
+        $sql2 = cfn()->db_mssql2->query("SELECT
+        paymtermid,
+        numofdays,
+        description,
+        dataareaid
+        FROM paymterm WHERE paymtermid = '$creditTermText' and dataareaid = '$dataareaid'
+        ");
+
+        if($sql->num_rows() == 0){
+            return $sql2;
+        }else{
+            return $sql;
+        }
+
     }
 }
 

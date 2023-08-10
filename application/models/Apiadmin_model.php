@@ -1110,17 +1110,22 @@ class Apiadmin_model extends CI_Model
                     return $names;
                 }
             ),
-            array('db' => 'periodupload', 'dt' => 1 ,
+            array('db' => 'taxid', 'dt' => 1 ,
                 'formatter' => function($d , $row){
                     return $d;
                 }
             ),
-            array('db' => 'invoiceaccount', 'dt' => 2 ,
+            array('db' => 'periodupload', 'dt' => 2 ,
                 'formatter' => function($d , $row){
                     return $d;
                 }
             ),
-            array('db' => 'dataareaid', 'dt' => 3 ,
+            array('db' => 'invoiceaccount', 'dt' => 3 ,
+                'formatter' => function($d , $row){
+                    return $d;
+                }
+            ),
+            array('db' => 'dataareaid', 'dt' => 4 ,
                 'formatter' => function($d , $row){
                     $fullCompany = '';
                     switch($d){
@@ -1141,43 +1146,43 @@ class Apiadmin_model extends CI_Model
                     return $fullCompany;
                 }
             ),
-            array('db' => 'invoiceid', 'dt' => 4),
-            array('db' => 'invoicedate', 'dt' => 5 ,
+            array('db' => 'invoiceid', 'dt' => 5),
+            array('db' => 'invoicedate', 'dt' => 6 ,
                 'formatter' => function($d , $row){
                     return conDateFromDb($d);
                 }
             ),
-            array('db' => 'purchid', 'dt' => 6,
+            array('db' => 'purchid', 'dt' => 7,
                 'formatter' => function($d , $row){
                     return $d;
                 }
             ),
-            array('db' => 'invoiceamount', 'dt' => 7,
+            array('db' => 'invoiceamount', 'dt' => 8,
                 'formatter' => function($d , $row){
                     return number_format($d , 2);
                 }
             ),
-            array('db' => 'payment', 'dt' => 8,
+            array('db' => 'payment', 'dt' => 9,
                 'formatter' => function($d , $row){
                     return $d;
                 }
             ),
-            array('db' => 'tr_periodbilling', 'dt' => 9,
+            array('db' => 'tr_periodbilling', 'dt' => 10,
                 'formatter' => function($d , $row){
                     return $d;
                 }
             ),
-            array('db' => 'tr_dateofpayreal', 'dt' => 10,
+            array('db' => 'tr_dateofpayreal', 'dt' => 11,
                 'formatter' => function($d , $row){
                     return conDateFromDb($d);
                 }
             ),
-            array('db' => 'tr_datetime', 'dt' => 11,
+            array('db' => 'tr_datetime', 'dt' => 12,
                 'formatter' => function($d , $row){
                     return conDateTimeFromDb($d);
                 }
             ),
-            array('db' => 'ulstatus', 'dt' => 12,
+            array('db' => 'ulstatus', 'dt' => 13,
                 'formatter' => function($d , $row){
                     $textColor = "";
                     switch($d){
@@ -1658,22 +1663,19 @@ class Apiadmin_model extends CI_Model
 
     public function saveConfirmPay()
     {
-        $received_data = json_decode(file_get_contents("php://input"));
-        if($received_data->action == "saveConfirmPay"){
-            $formno = $received_data->formno;
-            $taxid = $received_data->taxid;
-            $memovender = $received_data->memovender;
-            $memoadmin = $received_data->memoadmin;
-            $fnname = $received_data->fnname;
-            $fnecode = $received_data->fnecode;
-
+        if($this->input->post("ap-admin-formno") != ""){
             //update status and memo if not null
+            $formno = $this->input->post("ap-admin-formno");
+            $taxid = $this->input->post("ap-admin-taxid");
+            $user = $this->input->post("ap-admin-username");
+            $ecode = $this->input->post("ap-admin-ecode");
+
             $arupdatemain = array(
                 "ma_status" => "Posted",
-                "ma_memo_vender" => $memovender,
-                "ma_memo_admin" => $memoadmin,
-                "ma_fn_name" => $fnname,
-                "ma_fn_ecode" => $fnecode,
+                "ma_memo_vender" => $this->input->post("ap-memo-forvender"),
+                "ma_memo_admin" => $this->input->post("ap-memo-foradmin"),
+                "ma_fn_name" => $user,
+                "ma_fn_ecode" => $ecode,
                 "ma_fn_datetime" => date("Y-m-d H:i:s")
             );
             $this->db->where("ma_formno" , $formno);
@@ -1698,6 +1700,12 @@ class Apiadmin_model extends CI_Model
                     $this->db->update("billupload" , $arupdateStatus);
                 }
             }
+
+            //Upload File
+            
+            $fileInput = "ap-file_name";
+            uploadFiles($fileInput , $formno , $taxid , $user , $ecode);
+            //Upload File
 
             $this->load->model("email_model");
             $this->email_model->sendEmailStep3_toAccountAndVender($formno);
