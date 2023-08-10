@@ -1664,56 +1664,69 @@ class Apiadmin_model extends CI_Model
     public function saveConfirmPay()
     {
         if($this->input->post("ap-admin-formno") != ""){
-            //update status and memo if not null
+
             $formno = $this->input->post("ap-admin-formno");
             $taxid = $this->input->post("ap-admin-taxid");
             $user = $this->input->post("ap-admin-username");
             $ecode = $this->input->post("ap-admin-ecode");
 
-            $arupdatemain = array(
-                "ma_status" => "Posted",
-                "ma_memo_vender" => $this->input->post("ap-memo-forvender"),
-                "ma_memo_admin" => $this->input->post("ap-memo-foradmin"),
-                "ma_fn_name" => $user,
-                "ma_fn_ecode" => $ecode,
-                "ma_fn_datetime" => date("Y-m-d H:i:s")
-            );
-            $this->db->where("ma_formno" , $formno);
-            $this->db->where("ma_taxid" , $taxid);
-            $this->db->update("bill_main" , $arupdatemain);
+            if($this->input->post("ap-admin-mainstatus") == "In Progress"){
+                //update status and memo if not null
 
-            $arupdatetrans = array(
-                "tr_status" => "Posted",
-            );
-            $this->db->where("tr_formno" , $formno);
-            $this->db->where("tr_taxid" , $taxid);
-            $this->db->update("bill_trans" , $arupdatetrans);
+                $arupdatemain = array(
+                    "ma_status" => "Posted",
+                    "ma_memo_vender" => $this->input->post("ap-memo-forvender"),
+                    "ma_memo_admin" => $this->input->post("ap-memo-foradmin"),
+                    "ma_fn_name" => $user,
+                    "ma_fn_ecode" => $ecode,
+                    "ma_fn_datetime" => date("Y-m-d H:i:s")
+                );
+                $this->db->where("ma_formno" , $formno);
+                $this->db->where("ma_taxid" , $taxid);
+                $this->db->update("bill_main" , $arupdatemain);
 
-            //Select Data for update status on upload data
-            $biiTransData = $this->getBillTransByFormno($formno);
-            if($biiTransData->num_rows() != 0){
-                foreach($biiTransData->result() as $rs){
-                    $arupdateStatus = array(
-                        "ulstatus" => "Posted"
-                    );
-                    $this->db->where("autoid" , $rs->tr_billupload_autoid);
-                    $this->db->update("billupload" , $arupdateStatus);
+                $arupdatetrans = array(
+                    "tr_status" => "Posted",
+                );
+                $this->db->where("tr_formno" , $formno);
+                $this->db->where("tr_taxid" , $taxid);
+                $this->db->update("bill_trans" , $arupdatetrans);
+
+                //Select Data for update status on upload data
+                $biiTransData = $this->getBillTransByFormno($formno);
+                if($biiTransData->num_rows() != 0){
+                    foreach($biiTransData->result() as $rs){
+                        $arupdateStatus = array(
+                            "ulstatus" => "Posted"
+                        );
+                        $this->db->where("autoid" , $rs->tr_billupload_autoid);
+                        $this->db->update("billupload" , $arupdateStatus);
+                    }
                 }
+
+                //Upload File
+                $fileInput = "ap-file_name";
+                uploadFiles($fileInput , $formno , $taxid , $user , $ecode);
+                //Upload File
+
+                $this->load->model("email_model");
+                $this->email_model->sendEmailStep3_toAccountAndVender($formno);
+
+                $output = array(
+                    "msg" => "บันทึกข้อมูลการทำจ่ายเรียบร้อยแล้ว",
+                    "status" => "Update Data Success"
+                );
+            }else if($this->input->post("ap-admin-mainstatus") == "Posted"){
+                //Upload File
+                $fileInput = "ap-file_name";
+                uploadFiles($fileInput , $formno , $taxid , $user , $ecode);
+                //Upload File
+
+                $output = array(
+                    "msg" => "อัพโหลดไฟล์เรียบร้อยแล้ว",
+                    "status" => "Update File Upload Success"
+                );
             }
-
-            //Upload File
-            
-            $fileInput = "ap-file_name";
-            uploadFiles($fileInput , $formno , $taxid , $user , $ecode);
-            //Upload File
-
-            $this->load->model("email_model");
-            $this->email_model->sendEmailStep3_toAccountAndVender($formno);
-
-            $output = array(
-                "msg" => "บันทึกข้อมูลการทำจ่ายเรียบร้อยแล้ว",
-                "status" => "Update Data Success"
-            );
         }else{
             $output = array(
                 "msg" => "บันทึกข้อมูลไม่สำเร็จ",
