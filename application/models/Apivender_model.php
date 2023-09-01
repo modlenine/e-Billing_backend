@@ -719,7 +719,7 @@ class Apivender_model extends CI_Model {
             FROM
             billupload
             where dataareaid in ('sln' , 'ca' , 'tbb' , 'st') and taxid = '$taxid'
-            GROUP BY dataareaid , taxid , payment
+            GROUP BY dataareaid , taxid , payment , invoiceaccount
             ");
             return $sql;
         }
