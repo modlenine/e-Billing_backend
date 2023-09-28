@@ -583,6 +583,29 @@ class Apiadmin_model extends CI_Model
         echo json_encode($output);
     }
 
+    public function getDateOfPayRealM()
+    {
+        $received_data = json_decode(file_get_contents("php://input"));
+        if($received_data->action == "getDateOfPayReal"){
+            $sql = $this->db->query("SELECT
+            ma_dateofpayreal
+            FROM bill_main WHERE ma_status IN ( 'Checking', 'In Progress', 'Posted' )
+            GROUP BY ma_dateofpayreal
+            ");
+            $output = array(
+                "msg" => "ดึงข้อมูลวันที่จ่ายเงินสำเร็จ",
+                "status" => "Select Data Success",
+                "result" => $sql->result()
+            );
+        }else{
+            $output = array(
+                "msg" => "ดึงข้อมูลวันที่จ่ายเงินสำเร็จ",
+                "status" => "Select Data Success",
+            );
+        }
+        echo json_encode($output);
+    }
+
     public function getstatusUpload()
     {
         $sql = $this->db->query("SELECT
@@ -715,7 +738,7 @@ class Apiadmin_model extends CI_Model
         }
     }
 
-    public function loadBilledList($startDate , $endDate , $company , $status , $invoice)
+    public function loadBilledList($startDate , $endDate , $company , $status , $invoice , $dateofpayreal)
     {
         // DB table to use
         $table = 'billedlist_view_admin';
@@ -768,12 +791,17 @@ class Apiadmin_model extends CI_Model
                 }
             ),
             array('db' => 'ma_payment', 'dt' => 4),
-            array('db' => 'ma_datetime', 'dt' => 5,
+            array('db' => 'ma_dateofpayreal', 'dt' => 5 ,
+                'formatter' => function($d , $row){
+                    return conDateFromDb($d);
+                }
+            ),
+            array('db' => 'ma_datetime', 'dt' => 6,
                 'formatter' => function($d , $row){
                     return conDateTimeFromDb($d);
                 }
             ),
-            array('db' => 'ma_status', 'dt' => 6,
+            array('db' => 'ma_status', 'dt' => 7,
                 'formatter' => function($d , $row){
                     $textColor = "";
                     switch($d){
@@ -872,10 +900,17 @@ class Apiadmin_model extends CI_Model
                 $query_invoice = "";
             }
         }
+
+        $query_dateofpayreal = "";
+        if($dateofpayreal == "0"){
+            $query_dateofpayreal = "";
+        }else{
+            $query_dateofpayreal = "AND ma_dateofpayreal = '$dateofpayreal'";
+        }
         
 
         echo json_encode(
-            SSP::complex($_GET, $sql_details, $table, $primaryKey, $columns, null, "$sql_searchBydate $query_company $query_status $query_invoice")
+            SSP::complex($_GET, $sql_details, $table, $primaryKey, $columns, null, "$sql_searchBydate $query_company $query_status $query_invoice $query_dateofpayreal")
         );
 
     

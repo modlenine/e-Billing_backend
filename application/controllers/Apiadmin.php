@@ -53,6 +53,11 @@ class Apiadmin extends CI_Controller {
         $this->api->getDateOfPayReal();
     }
 
+    public function getDateOfPayRealM()
+    {
+        $this->api->getDateOfPayRealM();
+    }
+
     public function getstatusUpload()
     {
         $this->api->getstatusUpload();
@@ -122,9 +127,9 @@ class Apiadmin extends CI_Controller {
         $this->api->deleteData();
     }
 
-    public function loadBilledList($startDate , $endDate , $company , $status , $invoice)
+    public function loadBilledList($startDate , $endDate , $company , $status , $invoice , $dateofpayreal)
     {
-        $this->api->loadBilledList($startDate , $endDate , $company , $status , $invoice);
+        $this->api->loadBilledList($startDate , $endDate , $company , $status , $invoice , $dateofpayreal);
     }
 
     public function saveConfirmBill()
