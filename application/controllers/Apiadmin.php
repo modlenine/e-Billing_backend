@@ -297,6 +297,11 @@ class Apiadmin extends CI_Controller {
         //เช็คข้อมูลทุกวันเวลา 02.30 หากตรวจสอบพบว่าต้องส่ง Email ระบบจะส่ง Email ให้อัตโนมัติ
     }
 
+    public function getReportnotifypay()
+    {
+        $this->api->getReportnotifypay();
+    }
+
 
 
 

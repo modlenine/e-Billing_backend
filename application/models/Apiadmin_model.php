@@ -3043,6 +3043,61 @@ class Apiadmin_model extends CI_Model
         }
     }
 
+    public function getReportnotifypay()
+    {
+        // DB table to use
+        $table = 'email_notify_log';
+
+        // Table's primary key
+        $primaryKey = 'e_autoid';
+
+        $columns = array(
+            array('db' => 'e_taxid', 'dt' => 0 ,
+                'formatter' => function($d , $row){
+                    return $d;
+                }
+            ),
+            array('db' => 'e_mail', 'dt' => 1 ,
+                'formatter' => function($d , $row){
+                    return $d;
+                }
+            ),
+            array('db' => 'e_datetime', 'dt' => 2 ,
+                'formatter' => function($d , $row){
+                    return conDateTimeFromDb($d);
+                }
+            ),
+            array('db' => 'e_status', 'dt' => 3 ,
+                'formatter' => function($d , $row){
+                    return $d;
+                }
+            ),
+        );
+
+        // SQL server connection information
+        $sql_details = array(
+            'user' => getDb()->db_username,
+            'pass' => getDb()->db_password,
+            'db'   => getDb()->db_databasename,
+            'host' => getDb()->db_host
+        );
+
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                * If you just want to use the basic configuration for DataTables with PHP
+                * server-side, there is no need to edit below this line.
+                */
+        // $path = $_SERVER['DOCUMENT_ROOT']."/intsys/oss/server-side/scripts/ssp.class.php";
+        require('server-side/scripts/ssp.class.php');
+
+        echo json_encode(
+            SSP::complex($_GET, $sql_details, $table, $primaryKey, $columns, null,null)
+        );
+
+        //  echo json_encode(
+        //      SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns)
+        //  );
+    }
+
 
 
 
