@@ -3046,7 +3046,7 @@ class Apiadmin_model extends CI_Model
     public function getReportnotifypay()
     {
         // DB table to use
-        $table = 'email_notify_log';
+        $table = 'email_notify_log_view';
 
         // Table's primary key
         $primaryKey = 'e_autoid';
