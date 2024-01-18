@@ -50,7 +50,7 @@ function send_email($subject , $body ,$to = "" , $cc = "")
         $mail->SMTPDebug = 1;                                      // set mailer to use SMTP
         $mail->Host = "mail.saleecolour.net";  // specify main and backup server
     
-        $mail->Port = 25; // พอร์ท
+        $mail->Port = 587; // พอร์ท
     
         $mail->SMTPAuth = true;     // turn on SMTP authentication
         $mail->Username = getEmailUser()->email_user;  // SMTP username
@@ -122,8 +122,6 @@ function send_email($subject , $body ,$to = "" , $cc = "")
         // if($_SERVER['HTTP_HOST'] != "localhost"){
         //     $mail->send();
         // }
-
-
 }
 
 
@@ -287,10 +285,10 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
         }
     </style>
     '.$bodyVender;
-    $mail2->send();
-    // if($_SERVER['HTTP_HOST'] != "localhost"){
-    //     $mail->send();
-    // }
+    // $mail2->send();
+    if($_SERVER['HTTP_HOST'] != "localhost"){
+        $mail->send();
+    }
 }
 
 // Query Get Manager Email
