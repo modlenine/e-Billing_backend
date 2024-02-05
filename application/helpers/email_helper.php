@@ -118,10 +118,10 @@ function send_email($subject , $body ,$to = "" , $cc = "")
             }
         </style>
         '.$body;
-        $mail->send();
-        // if($_SERVER['HTTP_HOST'] != "localhost"){
-        //     $mail->send();
-        // }
+        // $mail->send();
+        if($_SERVER['HTTP_HOST'] != "localhost"){
+            $mail->send();
+        }
 }
 
 
@@ -138,7 +138,7 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
     $mail->SMTPDebug = 1;                                      // set mailer to use SMTP
     $mail->Host = "mail.saleecolour.net";  // specify main and backup server
 
-    $mail->Port = 25; // พอร์ท
+    $mail->Port = 587; // พอร์ท
 
     $mail->SMTPAuth = true;     // turn on SMTP authentication
     $mail->Username = getEmailUser()->email_user;  // SMTP username
@@ -206,10 +206,10 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
         }
     </style>
     '.$bodyAdmin;
-    $mail->send();
-    // if($_SERVER['HTTP_HOST'] != "localhost"){
-    //     $mail->send();
-    // }
+    // $mail->send();
+    if($_SERVER['HTTP_HOST'] != "localhost"){
+        $mail->send();
+    }
 
 
     $mail2->IsSMTP();
@@ -217,7 +217,7 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
     $mail2->SMTPDebug = 1;                                      // set mailer to use SMTP
     $mail2->Host = "mail.saleecolour.net";  // specify main and backup server
 
-    $mail2->Port = 25; // พอร์ท
+    $mail2->Port = 587; // พอร์ท
 
     $mail2->SMTPAuth = true;     // turn on SMTP authentication
     $mail2->Username = getEmailUser()->email_user;  // SMTP username
@@ -287,7 +287,7 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
     '.$bodyVender;
     // $mail2->send();
     if($_SERVER['HTTP_HOST'] != "localhost"){
-        $mail->send();
+        $mail2->send();
     }
 }
 

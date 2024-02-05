@@ -836,6 +836,11 @@ class Apivender_model extends CI_Model {
             $dateCalcToTime = strtotime(date($dateCalc));
 
             if($querySql->num_rows() != 0 && $sqldataNumRs->num_rows() != 0){
+
+                if($sqldataNumRs->row()->numofdays == 0){
+                    $sqldataNumRs->row()->numofdays = 30;
+                }
+
                 $daynum = $dayfix + $sqldataNumRs->row()->numofdays;
                 $datepay = strtotime(date($dateCalc)."+$daynum days");
                 $numofday = $sqldataNumRs->row()->numofdays;
