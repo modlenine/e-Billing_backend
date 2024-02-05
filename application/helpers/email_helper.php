@@ -24,7 +24,12 @@ function emailobj()
 
 function getEmailUser()
 {
-    $query = emailobj()->db->query("SELECT * FROM email_information");
+    $query = emailobj()->db->query("SELECT * FROM email_information WHERE email_id =1");
+    return $query->row();
+}
+function getEmailUser2()
+{
+    $query = emailobj()->db->query("SELECT * FROM email_information WHERE email_id =2");
     return $query->row();
 }
 
@@ -58,6 +63,102 @@ function send_email($subject , $body ,$to = "" , $cc = "")
         $mail->Password = getEmailUser()->email_password; // SMTP password
     
         $mail->From = getEmailUser()->email_user;
+        $mail->FromName = "โปรแกรมวางบิลออนไลน์ e-Billing System";
+    
+    
+        if($to != ""){
+            foreach($to as $email){
+                $mail->AddAddress($email);
+            }
+        }
+    
+    
+        if($cc != ""){
+            foreach($cc as $email){
+                $mail->AddCC($email);
+            }
+        }
+    
+    
+        // $mail->AddAddress("chainarong_k@saleecolour.com");
+        $mail->AddBCC("chainarong_k@saleecolour.com");
+    
+        $mail->WordWrap = 50;                                 // set word wrap to 50 characters
+        $mail->IsHTML(true);                                  // set email format to HTML
+        $mail->Subject = $subject;
+        $mail->Body = '
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Sarabun&display=swap");
+    
+            h3 , p , span , div{
+                font-family: Tahoma, sans-serif;
+                font-size:14px;
+            }
+            
+            table {
+                font-family: Tahoma, sans-serif;
+                font-size:14px;
+                border-collapse: collapse;
+                width: 800px;
+            }
+            
+            .center{
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            td, th {
+                border: 1px solid #ccc;
+                text-align: left;
+                padding: 8px;
+            }
+            
+            tr:nth-child(even) {
+                background-color: #F5F5F5;
+            }
+            
+            .bghead{
+                text-align:center;
+                background-color:#D3D3D3;
+            }
+        </style>
+        '.$body;
+        // $mail->send();
+        if($_SERVER['HTTP_HOST'] != "localhost"){
+            if(!$mail->send()){
+                send_email2($subject , $body ,$to , $cc);
+            }
+        }
+}
+
+function send_email2($subject , $body ,$to = "" , $cc = "")
+{
+
+    if (!class_exists('PHPMailer')) {
+        // PHPMailer class is not yet defined, so declare it
+        require("PHPMailer_5.2.0/class.phpmailer.php");
+        require("PHPMailer_5.2.0/class.smtp.php");
+
+    }
+
+        // Now you can safely instantiate the PHPMailer class
+        $mail = new PHPMailer();
+
+        // PHPMailer class is already defined, handle the situation accordingly
+        // You may choose to throw an exception, log an error, or take an alternative action
+        $mail->IsSMTP();
+        $mail->CharSet = "utf-8";  // ในส่วนนี้ ถ้าระบบเราใช้ tis-620 หรือ windows-874 สามารถแก้ไขเปลี่ยนได้
+        $mail->SMTPDebug = 1;                                      // set mailer to use SMTP
+        $mail->Host = "mail.saleecolour.net";  // specify main and backup server
+    
+        $mail->Port = 587; // พอร์ท
+    
+        $mail->SMTPAuth = true;     // turn on SMTP authentication
+        $mail->Username = getEmailUser2()->email_user;  // SMTP username
+    
+        $mail->Password = getEmailUser2()->email_password; // SMTP password
+    
+        $mail->From = getEmailUser2()->email_user;
         $mail->FromName = "โปรแกรมวางบิลออนไลน์ e-Billing System";
     
     
