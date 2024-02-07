@@ -70,7 +70,7 @@ function sendEmailtoUserForactivate($email , $taxid , $link)
    //  Email Zone
    $to = array($email);
 
-   send_email($subject, $body, $to, $cc);
+   send_email_vender($subject, $body, $to, $cc);
    //  Email Zone
 }
 
@@ -103,7 +103,7 @@ function sendEmailtoUserForForgotpassword($email , $taxid , $tokencode)
    //  Email Zone
    $to = array($email);
 
-   send_email($subject, $body, $to, $cc);
+   send_email_vender($subject, $body, $to, $cc);
    //  Email Zone
 }
 
@@ -676,7 +676,7 @@ function sendEmailtoVenderNotifyPay($taxid , $mainformnoPaying , $email)
 
    }
 
-   send_email($subject, $body, $toVender, $cc);
+   send_email_vender($subject, $body, $toVender, $cc);
    //  Email Zone
    $arinsertEmail = array(
       "e_taxid" => $taxid,
