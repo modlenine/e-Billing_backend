@@ -171,7 +171,7 @@ class Apivender_model extends CI_Model {
             slc_lname,
             address,
             bpc_whtid
-            FROM vendtable WHERE bpc_whtid = '$taxid'
+            FROM vendtable WHERE bpc_whtid = '$taxid' AND vendgroup NOT IN ('Cancel')
             GROUP BY name , slc_fname , slc_lname , address , bpc_whtid
             ");
 
@@ -181,7 +181,7 @@ class Apivender_model extends CI_Model {
             slc_lname,
             address,
             bpc_whtid
-            FROM vendtable WHERE bpc_whtid = '$taxid'
+            FROM vendtable WHERE bpc_whtid = '$taxid' AND vendgroup NOT IN ('Cancel')
             GROUP BY name , slc_fname , slc_lname , address , bpc_whtid
             ");
 
