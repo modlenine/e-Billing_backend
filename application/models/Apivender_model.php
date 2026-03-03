@@ -896,6 +896,7 @@ class Apivender_model extends CI_Model {
 
 
             $queryDatePayRealNextMonth = $this->getDatePayReal($monthPay , $yearPay);
+            $datePayreal2 = ""; // Initialize variable to prevent undefined variable error
             if($queryDatePayRealNextMonth->num_rows() != 0){
                 $datePayreal2 = $queryDatePayRealNextMonth->row()->sc_datePay;
             }
@@ -2043,7 +2044,7 @@ class Apivender_model extends CI_Model {
             }
 
             // Check Email
-            $sqlcheckEmail = $this->checkEmailDuplicate_edit($email , 'vm_email');
+            $sqlcheckEmail = $this->checkEmailDuplicate_edit($email , 'vm_email' , $taxid);
 
             if($sqlcheckEmail->num_rows() != 0){
                 if($email != $sqlcheckEmail->row()->vm_email){
@@ -2087,6 +2088,31 @@ class Apivender_model extends CI_Model {
                         "status" => "Update Data Success",
                     );
                 }
+            }else{
+                $this->load->model("email_model");
+                $codeactivate = md5(uniqid(rand(), true));
+                $arupdate = array(
+                    "vm_email_temp" => $email,
+                    "vm_email" => null,
+                    "vm_email1" => $email1,
+                    "vm_email2" => $email2,
+                    "vm_status" => "wait activate",
+                    "vm_activatecode" => $codeactivate,
+                    "vm_expire_linkactivate" => strtotime('+1 hours')
+                );
+                $this->db->where("vm_taxid" , $taxid);
+                $this->db->update("vender_member" , $arupdate);
+
+                $this->email_model->sendEmailtoUserForactivate($email , $taxid , $codeactivate);
+
+                $fileInput = "userpro-image";
+                uploadUserProfile($fileInput , $taxid);
+    
+                $output = array(
+                    "msg" => "อัพเดตข้อมูล User Profile สำเร็จ",
+                    "status" => "Update Data Success And Activate Data Again",
+                    "taxid" => $taxid
+                );
             }
             
 
@@ -2098,11 +2124,11 @@ class Apivender_model extends CI_Model {
         }
         echo json_encode($output);
     }
-    private function checkEmailDuplicate_edit($email , $column)
+    private function checkEmailDuplicate_edit($email , $column , $taxid)
     {
         if($email != "" && $column != ""){
             $sql = $this->db->query("SELECT
-            $column FROM vender_member WHERE $column = '$email'
+            $column FROM vender_member WHERE $column = '$email' AND vm_taxid = '$taxid'
             ");
             return $sql;
         }
