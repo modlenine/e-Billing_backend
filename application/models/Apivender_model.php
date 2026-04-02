@@ -4,6 +4,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Apivender_model extends CI_Model {
     
+    public $db_mssql;
+    public $db_mssql2;
+    
     public function __construct()
     {
         parent::__construct();
@@ -52,8 +55,8 @@ class Apivender_model extends CI_Model {
 
             }else if($sqlCheckData->num_rows() > 0){
                 // Check Data Login ว่าข้อมูลถูกต้องหรือไม่
-                $user = mysqli_real_escape_string($this->escape_string(), $venderUsername);
-                $pass = mysqli_real_escape_string($this->escape_string(), md5($venderPassword));
+                $user = $this->db->escape_str($venderUsername);
+                $pass = $this->db->escape_str(md5($venderPassword));
 
                 $sqlLogin = $this->db->query(sprintf("SELECT * FROM vender_member WHERE vm_username='%s' AND vm_password='%s' ", $user, $pass));
 
@@ -149,15 +152,6 @@ class Apivender_model extends CI_Model {
             }else{
                 return $sql;
             }
-        }
-    }
-
-    private function escape_string()
-    {
-        if($_SERVER['HTTP_HOST'] == "localhost"){
-            return mysqli_connect("192.168.20.22", "ant", "Ant1234", "saleecolour");
-        }else{
-            return mysqli_connect("localhost", "ant", "Ant1234", "saleecolour");
         }
     }
 
@@ -1242,7 +1236,11 @@ class Apivender_model extends CI_Model {
                     $dataBillMain = getdataFromBillMain($d);
                     $dataBillFiles = getdataFromBillFiles($d);
 
-                    if($_SERVER['HTTP_HOST'] == "localhost"){
+                    // เช็คว่าทำงานบน local development
+                    $host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+                    $is_local = in_array($host, ['localhost', '127.0.0.1', '::1']);
+                    
+                    if($is_local){
                         $url = "ValidateBilled/";
                     }else{
                         $url = "/intsys/ebilling/ValidateBilled/";

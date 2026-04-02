@@ -152,6 +152,27 @@ abstract class CI_DB_driver {
 	public $pconnect		= FALSE;
 
 	/**
+	 * Failover settings
+	 *
+	 * @var	array
+	 */
+	public $failover		= array();
+
+	/**
+	 * Compress flag
+	 *
+	 * @var	bool
+	 */
+	public $compress		= FALSE;
+
+	/**
+	 * Strict mode flag
+	 *
+	 * @var	bool
+	 */
+	public $stricton		= FALSE;
+
+	/**
 	 * Connection ID
 	 *
 	 * @var	object|resource

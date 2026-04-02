@@ -128,16 +128,21 @@ function send_email($subject , $body ,$to = "" , $cc = "")
             }
         </style>
         '.$body;
-        // $mail->send();
-        // if($_SERVER['HTTP_HOST'] != "localhost"){
-        //     if(!$mail->send()){
-        //         send_email2($subject , $body ,$to , $cc);
-        //     }
-        // }
+
+        // เช็คว่าทำงานบน local development
+        $host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+        $is_local = in_array($host, ['localhost', '127.0.0.1', '::1']);
         
-        if(!$mail->send()){
-            send_email2($subject , $body ,$to , $cc);
+        if(!$is_local){
+            if($mail->send()){
+                return true; // ส่งสำเร็จด้วย email account แรก
+            } else {
+                // ถ้าส่งไม่สำเร็จ ลองใช้ email account ตัวที่ 2
+                return send_email2($subject , $body ,$to , $cc);
+            }
         }
+        
+        return false; // skip sending on localhost
 }
 
 function send_email2($subject , $body ,$to = "" , $cc = "")
@@ -228,10 +233,16 @@ function send_email2($subject , $body ,$to = "" , $cc = "")
             }
         </style>
         '.$body;
-        $mail->send();
-        // if($_SERVER['HTTP_HOST'] != "localhost"){
-        //     $mail->send();
-        // }
+        
+        // เช็คว่าทำงานบน local development
+        $host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+        $is_local = in_array($host, ['localhost', '127.0.0.1', '::1']);
+        
+        if(!$is_local){
+            return $mail->send(); // return true/false ตามผลการส่ง
+        }
+        
+        return false; // skip sending on localhost
 }
 
 function send_email_vender($subject , $body ,$to = "" , $cc = "")
@@ -322,17 +333,20 @@ function send_email_vender($subject , $body ,$to = "" , $cc = "")
             }
         </style>
         '.$body;
-        $mail->send();
-        // if($_SERVER['HTTP_HOST'] != "localhost"){
-        //     if(!$mail->send()){
-        //         send_email2($subject , $body ,$to , $cc);
-        //     }
-        // }
         
+        // เช็คว่าทำงานบน local development
+        $host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+        $is_local = in_array($host, ['localhost', '127.0.0.1', '::1']);
+        
+        if(!$is_local){
+            return $mail->send(); // return true/false ตามผลการส่ง
+        }
+        
+        return false; // skip sending on localhost
 }
 
 
-function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , $ccAdmin = "" , $subjectVender , $bodyVender ,$toVender = "" , $ccVender = "" )
+function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , $ccAdmin = "" , $subjectVender = "" , $bodyVender = "" ,$toVender = "" , $ccVender = "" )
 {
     require("PHPMailer_5.2.0/class.phpmailer.php");
     require("PHPMailer_5.2.0/class.smtp.php");
@@ -413,10 +427,17 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
         }
     </style>
     '.$bodyAdmin;
-    $mail->send();
-    // if($_SERVER['HTTP_HOST'] != "localhost"){
-    //     $mail->send();
-    // }
+    
+    // เช็คว่าทำงานบน local development
+    $host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+    $is_local = in_array($host, ['localhost', '127.0.0.1', '::1']);
+    
+    $result1 = false;
+    $result2 = false;
+    
+    if(!$is_local){
+        $result1 = $mail->send();
+    }
 
 
     $mail2->IsSMTP();
@@ -492,10 +513,13 @@ function send_emailToAdminAndVender($subjectAdmin , $bodyAdmin ,$toAdmin = "" , 
         }
     </style>
     '.$bodyVender;
-    $mail2->send();
-    // if($_SERVER['HTTP_HOST'] != "localhost"){
-    //     $mail2->send();
-    // }
+    
+    if(!$is_local){
+        $result2 = $mail2->send();
+    }
+    
+    // return true ถ้าส่งอย่างน้อย 1 email สำเร็จ
+    return ($result1 || $result2);
 }
 
 // Query Get Manager Email

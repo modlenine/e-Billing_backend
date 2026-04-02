@@ -1,10 +1,30 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-if($_SERVER['HTTP_HOST'] == "localhost"){
-	$mysqlServer = "192.168.20.22";
+// เช็คว่าทำงานบน local development
+$host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+$is_local = in_array($host, ['localhost', '127.0.0.1', '::1']);
+
+if($is_local){
+	$mysqlServer = "192.168.20.34";
+	$username = "ofintra";
+	$password = "Ofin1234";
+	// $mssql = "192.168.10.60";
+	// $mssqlDB_sln = "SLC_STD_TEST";
+	// $mssqlDB_tbb = "APPLY_STD_TEST";
+
+	$mssql = "192.168.10.54";
+	$mssqlDB_sln = "SLC_STD";
+	$mssqlDB_tbb = "APPLY_STD";
+
 }else{
-	$mysqlServer = "localhost";
+	$mysqlServer = "192.168.20.34";
+	$username = "ofintra";
+	$password = "Ofin1234";
+
+	$mssql = "192.168.10.54";
+	$mssqlDB_sln = "SLC_STD";
+	$mssqlDB_tbb = "APPLY_STD";
 }
 
 $active_group = 'default';
@@ -13,8 +33,8 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => $mysqlServer,
-	'username' => 'ant',
-	'password' => 'Ant1234',
+	'username' => $username,
+	'password' => $password,
 	'database' => 'ebilling',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
@@ -36,8 +56,8 @@ $db['default'] = array(
 $db['saleecolour'] = array(
 	'dsn'	=> '',
 	'hostname' => $mysqlServer,
-	'username' => 'ant',
-	'password' => 'Ant1234',
+	'username' => $username,
+	'password' => $password,
 	'database' => 'saleecolour',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
@@ -59,11 +79,11 @@ $db['saleecolour'] = array(
 
 $db['mssql'] = array(
 	'dsn' => '',
-	'hostname' => '192.168.10.54',
+	'hostname' => $mssql,
 	// 'hostname' => '192.168.10.60',
 	'username' => 'dataconnector',
 	'password' => 'Admin1234',
-	'database' => 'SLC_STD',
+	'database' => $mssqlDB_sln,
 	'dbdriver' => 'sqlsrv',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
@@ -83,11 +103,11 @@ $db['mssql'] = array(
 
    $db['mssql2'] = array(
 	'dsn' => '',
-	'hostname' => '192.168.10.54',
+	'hostname' => $mssql,
 	// 'hostname' => '192.168.10.60',
 	'username' => 'dataconnector',
 	'password' => 'Admin1234',
-	'database' => 'APPLY_STD',
+	'database' => $mssqlDB_tbb,
 	'dbdriver' => 'sqlsrv',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

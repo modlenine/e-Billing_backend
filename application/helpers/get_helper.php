@@ -106,10 +106,14 @@ function getRuningCode($groupcode)
 
 function getDb()
 {
-    if($_SERVER['HTTP_HOST'] == "localhost"){
-        $dbHost = "192.168.20.22";
+    // เช็คว่าทำงานบน local development
+    $host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+    $is_local = in_array($host, ['localhost', '127.0.0.1', '::1']);
+
+    if($is_local){
+        $dbHost = "192.168.20.34";
     }else{
-        $dbHost = "localhost";
+        $dbHost = "192.168.20.34";
     }
 
     $sql = getfn()->db->query("SELECT

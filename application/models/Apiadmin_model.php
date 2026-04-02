@@ -4,6 +4,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Apiadmin_model extends CI_Model
 {
+    public $db2;
+    public $db_mssql;
+    public $db_mssql2;
+    public $email_model;
 
     public function __construct()
     {

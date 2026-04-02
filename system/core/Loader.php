@@ -114,6 +114,29 @@ class CI_Loader {
 	 */
 	protected $_ci_helpers =	array();
 
+	// PHP 8.2 compatibility: Dynamic properties from controller
+	public $load;
+	public $benchmark;
+	public $hooks;
+	public $config;
+	public $log;
+	public $utf8;
+	public $uri;
+	public $exceptions;
+	public $router;
+	public $output;
+	public $security;
+	public $input;
+	public $lang;
+	public $db;
+	public $email;
+	public $session;
+	public $agent;
+	public $api;
+	public $email_model;
+	public $db_mssql;
+	public $db_mssql2;
+
 	/**
 	 * List of class name mappings
 	 *
@@ -390,10 +413,6 @@ class CI_Loader {
 		{
 			return DB($params, $query_builder);
 		}
-
-		// Initialize the db variable. Needed to prevent
-		// reference errors with some configurations
-		$CI->db = '';
 
 		// Load the DB class
 		$CI->db =& DB($params, $query_builder);

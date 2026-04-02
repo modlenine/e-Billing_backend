@@ -4,6 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Apiadmin extends CI_Controller {
 
+    public $api;
+    public $email_model;
     
     public function __construct()
     {

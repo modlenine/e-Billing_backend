@@ -4,6 +4,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Apivender extends CI_Controller {
 
+    public $api;
+    public $email_model;
+    public $db_mssql;
+    public $db_mssql2;
     
     public function __construct()
     {
@@ -91,6 +95,9 @@ class Apivender extends CI_Controller {
 
     public function printBillReport($formno , $venderaccount , $dataareaid)
     {
+        // ปิด error display ตลอดทั้งฟังก์ชันเพื่อให้ TCPDF สร้าง PDF ได้
+        $old_error_level = error_reporting(0);
+        
         if($formno != "" && $venderaccount != "" && $dataareaid != ""){
             require_once('TCPDF/tcpdf.php');
 
@@ -103,6 +110,9 @@ class Apivender extends CI_Controller {
 
             $this->load->view("printBilled" , $data);
         }
+        
+        // เปิด error reporting กลับหลังจากสร้าง PDF เสร็จ
+        error_reporting($old_error_level);
     }
 
     public function loadBilledList($taxid , $startDate , $endDate , $company , $status , $invoice , $periodbilling)

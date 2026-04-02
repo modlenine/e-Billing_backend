@@ -51,6 +51,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class CI_URI {
 
 	/**
+	 * Config class reference
+	 *
+	 * @var	object
+	 */
+	public $config;
+
+	/**
 	 * List of cached URI segments
 	 *
 	 * @var	array
