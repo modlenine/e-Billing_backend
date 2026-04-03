@@ -27,55 +27,69 @@ class Apiadmin_model extends CI_Model
         echo "test call";
     }
 
-    public function escape_string()
-    {
-        if($_SERVER['HTTP_HOST'] == "localhost"){
-            return mysqli_connect("192.168.20.22", "ant", "Ant1234", "saleecolour");
-        }else{
-            return mysqli_connect("localhost", "ant", "Ant1234", "saleecolour");
-        }
-
-    }
-
-
+    /**
+     * เช็ค session admin จาก intranet
+     * Admin ต้อง login ที่ intranet เท่านั้น (ไม่มี login form ที่ ebilling)
+     * Intranet จะสร้าง session ใน ci_sessions และ userData ใน localStorage
+     * ฟังก์ชันนี้จะเช็ค session จาก ci_sessions table ที่ share กับ intranet
+     */
     public function checklogin_admin()
     {
-
-        if ($this->input->post("username") != "" && $this->input->post("password") != "") {
-            $username = $this->input->post("username");
-            $password = $this->input->post("password");
-
-            $user = mysqli_real_escape_string($this->escape_string(), $username);
-            $pass = mysqli_real_escape_string($this->escape_string(), md5($password));
-
-            // Check ว่าเป็นการ Login ของ Vender หรือว่า พนักงาน
-            $sql = $this->db2->query(sprintf("SELECT * FROM member WHERE username='%s' AND password='%s' ", $user, $pass));
-            if ($sql->num_rows() == 0) {
-                $output = array(
-                    "msg" => "ไม่พบข้อมูลผู้ใช้งานในระบบ",
-                    "status" => "Login failed"
-                );
-            } else {
-                $uri = isset($_SESSION['RedirectKe']) ? $_SESSION['RedirectKe'] : '/intsys/ebilling/admin/';
-                // header('location:' . $uri);
-                // Check IT
-                $output = array(
-                    "msg" => "ลงชื่อเข้าใช้สำเร็จ",
-                    "status" => "Login Successfully",
-                    "uri" => $uri,
-                    "session_data" => $sql->row_array(),
-                    "dateExpire" => strtotime(date("Y-m-d H:i:s")."+10 seconds"),
-                );
-            }
-
-
-        }else{
+        // Load session library (ใช้ database session ที่ share กับ intranet)
+        $this->load->library('session');
+        
+        // เช็ค session จาก intranet (ci_sessions table)
+        $session_id = $this->session->userdata('id');
+        $session_username = $this->session->userdata('username');
+        
+        if ($session_id && $session_username) {
+            // มี session อยู่แล้วจาก intranet - ส่งสถานะกลับไปว่ามี session
             $output = array(
-                "msg" => "กรุณากรอก Username & Password",
-                "status" => "Login failed please fill username and password"
+                "msg" => "พบ session จาก intranet",
+                "status" => "Session Found",
+                "hasSession" => true
+            );
+        } else {
+            // ไม่มี session → ต้อง login ที่ intranet
+            // รับ return URL จาก frontend (หน้า Vue ที่กำลังเปิดอยู่)
+            $return_url_raw = $this->input->post('return_url');
+            
+            // ถ้าไม่มี return_url ให้ใช้ default
+            if(empty($return_url_raw)) {
+                $url = $_SERVER['REQUEST_SCHEME']."://".$_SERVER['HTTP_HOST'];
+                $return_url_raw = "$url/intsys/ebilling/admin";
+            }
+            
+            $return_url = urlencode($return_url_raw);
+            
+            // สร้าง intranet login URL พร้อม return_url parameter
+            $url = $_SERVER['REQUEST_SCHEME']."://".$_SERVER['HTTP_HOST'];
+            $intranet_login = "$url/intranet/login?return_url=$return_url";
+            
+            $output = array(
+                "msg" => "กรุณา login ที่ระบบ intranet ก่อน",
+                "status" => "No Session",
+                "hasSession" => false,
+                "redirect" => $intranet_login
             );
         }
-      
+        
+        echo json_encode($output);
+    }
+
+    /**
+     * Logout admin - ไม่ต้อง destroy session ที่นี่
+     * ให้ redirect ไปที่ intranet เพื่อให้ intranet เป็นคน destroy session เอง
+     * (เพราะ session เป็นของ intranet)
+     */
+    public function logout_admin()
+    {
+        $output = array(
+            "msg" => "Logout สำเร็จ",
+            "status" => "Logout Success",
+            "redirect" => "/intranet/login/logoutCheckSession"
+        );
+        
         echo json_encode($output);
     }
 
